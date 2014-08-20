@@ -5,13 +5,15 @@
 Summary: Console-based network traffic monitor
 Name: vnstat
 Version: 1.11
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: Applications/System
 URL: http://humdi.net/vnstat/
 
 Source: http://humdi.net/vnstat/vnstat-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+
+BuildRequires: gd-devel
 
 %description
 vnstat is a network traffic monitor that keeps a log of daily network
@@ -51,13 +53,15 @@ EOF
 
 %build
 %{__make} %{?_smp_mflags} \
-    CFLAGS="%{optflags}"
+    CFLAGS="%{optflags}" all
 
 %install
 %{__rm} -rf %{buildroot}
 %{__install} -d -m0755 %{buildroot}%{_localstatedir}/lib/vnstat/
 %{__install} -Dp -m0644 man/vnstat.1 %{buildroot}%{_mandir}/man1/vnstat.1
+%{__install} -Dp -m0644 man/vnstati.1 %{buildroot}%{_mandir}/man1/vnstati.1
 %{__install} -Dp -m0755 src/vnstat %{buildroot}%{_bindir}/vnstat
+%{__install} -Dp -m0755 src/vnstati %{buildroot}%{_bindir}/vnstati
 %{__install} -Dp -m0755 vnstat.cron %{buildroot}%{_sbindir}/vnstat.cron
 %{__install} -Dp -m0644 vnstat.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/vnstat
 %{__install} -Dp -m0644 vnstat.crond %{buildroot}%{_sysconfdir}/cron.d/vnstat
@@ -70,15 +74,20 @@ EOF
 %doc CHANGES COPYING FAQ INSTALL README
 #doc cron/
 %doc %{_mandir}/man1/vnstat.1*
+%doc %{_mandir}/man1/vnstati.1*
 %config(noreplace) %{_sysconfdir}/sysconfig/vnstat
 %config %{_sysconfdir}/cron.d/vnstat
 %{_bindir}/vnstat
+%{_bindir}/vnstati
 %{_sbindir}/vnstat.cron
 
 %defattr(0755, nobody, nobody, 0755)
 %{_localstatedir}/lib/vnstat/
 
 %changelog
+* Wed Aug 20 2014 Georgi Stanojevski <glisha@gmail.com> - 1.11-2
+- Added vnstati to build process for png image output support
+
 * Sat Sep 29 2012 Denis Fateyev <denis@fateyev.com> - 1.11-1
 - Updated to release 1.11
 
